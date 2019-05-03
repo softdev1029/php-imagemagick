@@ -65,14 +65,29 @@ function merge_mark_desk($store) {
       if (!$file_info->isDot()) {
         $desk = $file_info->getFilename();
         $desk = get_desk_file_path($desk);
+
+        $cmd = "identify -ping -format '%w' $desk";
+        $desk_w = shell_exec($cmd);
+        debug($cmd);
         
         $mark = get_dst_file_path(get_png_name($img_item->dst));
 
+        $cmd = "identify -ping -format '%w' $mark";
+        $mark_w = shell_exec($cmd);
+        debug($cmd);
+
+        $ratio = $desk_w / 3 / $mark_w * 100;
+        $cmd = "convert $mark -resize $ratio% tmp.png";
+        exec($cmd);
+        debug($cmd);
+
         $dst = get_mockup_file_path(get_png_name($img_item->dst), $file_info->getFilename());
-        $cmd = "magick " . $desk . " " . $mark . " -gravity center -compose over -composite " . $dst;
+        $cmd = "magick $desk tmp.png -gravity center -compose over -composite " . $dst;
 
         exec($cmd);
         debug($cmd);
+
+        unlink("tmp.png");
 
         $i++;
       }
