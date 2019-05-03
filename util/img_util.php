@@ -4,7 +4,7 @@ function change_color_to_black($store) {
   foreach($store->img_array as $img_item) {
     $src = get_src_tmp_file_path($img_item->dst);
     $dst = get_dst_file_path(get_png_name($img_item->dst));
-    $cmd = "convert " . $src . " -colorspace LinearGray " . $dst;
+    $cmd = "convert " . $src . " -colorspace LinearGray -flatten -fuzz 1% -trim +repage " . $dst;
     exec($cmd);
     debug($cmd);
   }
@@ -32,12 +32,19 @@ function resize_image(&$store) {
     $i = 1;
     foreach ($store->proportion_array as $proportion) {
       $src = get_dst_file_path(get_png_name($img_item->dst));
-      $dst = get_dst_file_path(get_png_name($img_item->dst), $proportion);
+      $dst = get_dst_file_path(get_png_name($img_item->dst), $proportion['type'] . $proportion['size']);
       $size = 'size' . $i;
-      $rw = $img_item->w * $proportion / 100;
-      $rh = $img_item->h * $proportion / 100;
+      $ratio = $img_item->w / $img_item->h;
+      if ($proportion['type'] == 'w') {
+        $rw = $proportion['size'] * UNIT;
+        $rh = $rw / $img_item->w * $img_item->h;
+      } else {
+        $rw = $rh / $img_item->h * $img_item->w;
+        $rh = $proportion['size'] * UNIT;
+      }
+      $ratio = $rw / $img_item->w * 100;
       $img_item->$size = "w=" . $rw . ", h=" . $rh;
-      $cmd = "convert " . $src . " -resize " . $proportion . "% " . $dst;
+      $cmd = "convert " . $src . " -resize " . $ratio . "% " . $dst;
       exec($cmd);
       debug($cmd);
       $i++;

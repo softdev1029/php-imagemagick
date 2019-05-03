@@ -12,8 +12,8 @@ function get_src_tmp_file_path($file_name) {
   return SRC_TMP_DIR . "/" . $file_name;
 }
 
-function get_dst_file_path($file_name, $proportion = 0) {
-  if ($proportion != 0) {
+function get_dst_file_path($file_name, $proportion = '0') {
+  if ($proportion != '0') {
     return DST_DIR . "/" . $proportion . "_" . $file_name;
   }
   return DST_DIR . "/" . $file_name;
