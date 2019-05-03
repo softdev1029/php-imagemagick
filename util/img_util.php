@@ -42,11 +42,11 @@ function resize_image(&$store) {
         $rw = $proportion['size'] * UNIT;
         $rh = $rw / $img_item->w * $img_item->h;
       } else {
-        $rw = $rh / $img_item->h * $img_item->w;
         $rh = $proportion['size'] * UNIT;
+        $rw = $rh / $img_item->h * $img_item->w;
       }
       $ratio = $rw / $img_item->w * 100;
-      $img_item->$size = "w=" . $rw . ", h=" . $rh;
+      $img_item->$size = "w=" . ($rw / UNIT) . ", h=" . ($rh / UNIT);
       $cmd = "convert " . $src . " -resize " . $ratio . "% " . $dst;
       exec($cmd);
       debug($cmd);
