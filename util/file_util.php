@@ -24,6 +24,14 @@ function get_dst_csv_file_path() {
   return DST_CSV_DIR . "/" . $file_name;
 }
 
+function get_desk_file_path($file_name) {
+  return DESK_DIR . "/" . $file_name;
+}
+
+function get_mockup_file_path($mark, $desk) {
+  return MOCKUP_DIR . "/" . $mark . "_" . $desk;
+}
+
 function rename_file($src) {
   $dst = date("Ymd") . "_" . str_replace(" ", "_", $src);
   return $dst;
@@ -104,9 +112,15 @@ function init_dir() {
     die();
   }
   
+  if (!file_exists(DESK_DIR)) {
+    debug(sprintf('There is not desk image directory: %s', DESK_DIR));
+    die();
+  }
+
   deleteDir(SRC_TMP_DIR);
   deleteDir(DST_DIR);
   deleteDir(DST_CSV_DIR);
+  deleteDir(MOCKUP_DIR);
   
   if (!file_exists(SRC_TMP_DIR) && !mkdir(SRC_TMP_DIR, 0777, true)) {
     debug('Failed to create the temporary directory for image files.');
@@ -118,5 +132,9 @@ function init_dir() {
   
   if (!file_exists(DST_CSV_DIR) && !mkdir(DST_CSV_DIR, 0777, true)) {
     debug('Failed to create the output directory for CSV files.');
+  }
+
+  if (!file_exists(MOCKUP_DIR) && !mkdir(MOCKUP_DIR, 0777, true)) {
+    debug('Failed to create the output directory for mockup files.');
   }
 }

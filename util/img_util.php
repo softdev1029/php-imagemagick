@@ -7,6 +7,9 @@ function change_color_to_black($store) {
     $cmd = "convert " . $src . " -colorspace LinearGray -flatten -fuzz 1% -trim +repage " . $dst;
     exec($cmd);
     debug($cmd);
+    $cmd = "convert " . $dst . " -transparent white " . $dst;
+    exec($cmd);
+    debug($cmd);
   }
 }
 
@@ -50,4 +53,29 @@ function resize_image(&$store) {
       $i++;
     }
   } 
+}
+
+function merge_mark_desk($store) {
+  debug("Merging mark and desk...");
+  foreach ($store->img_array as $img_item) {
+    $i = 0;
+    $dir_name = DESK_DIR;
+    $dir = new DirectoryIterator($dir_name);
+    foreach ($dir as $file_info) {
+      if (!$file_info->isDot()) {
+        $desk = $file_info->getFilename();
+        $desk = get_desk_file_path($desk);
+        
+        $mark = get_dst_file_path(get_png_name($img_item->dst));
+
+        $dst = get_mockup_file_path(get_png_name($img_item->dst), $file_info->getFilename());
+        $cmd = "magick " . $desk . " " . $mark . " -gravity center -compose over -composite " . $dst;
+
+        exec($cmd);
+        debug($cmd);
+
+        $i++;
+      }
+    }
+  }
 }

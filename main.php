@@ -21,4 +21,6 @@ resize_image($store);
 
 make_csv_file($store);
 
+merge_mark_desk($store);
+
 // debug($store->img_array);
