@@ -8,6 +8,10 @@ function get_src_file_path($file_name) {
   return SRC_DIR . "/" . $file_name;
 }
 
+function get_src_tmp_file_path($file_name) {
+  return SRC_TMP_DIR . "/" . $file_name;
+}
+
 function get_dst_file_path($file_name, $proportion = 0) {
   if ($proportion != 0) {
     return DST_DIR . "/" . $proportion . "_" . $file_name;
@@ -36,12 +40,11 @@ function rename_files(&$store) {
       $img_item = new ImageItem();
       $img_item->src = $src;
       $img_item->dst = $dst;
-      $img_item->dir = $dir_name;
       $store->add($img_item);
 
       $src = get_src_file_path($img_item->src);
-      $dst = get_src_file_path($img_item->dst);
-      rename($src, $dst);
+      $dst = get_src_tmp_file_path($img_item->dst);
+      copy($src, $dst);
       debug('src=' . $src . ', dst=' . $dst);
       $i++;
     }
@@ -71,4 +74,49 @@ function make_csv_file($store) {
       $rlt = fputcsv($fp, (array)$img_item);
   }
   fclose($fp);
+}
+
+function deleteDir($dirPath) {
+  if (!file_exists($dirPath)) {
+    return;
+  }
+
+  if (! is_dir($dirPath)) {
+      throw new InvalidArgumentException("$dirPath must be a directory");
+  }
+  if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+      $dirPath .= '/';
+  }
+  $files = glob($dirPath . '*', GLOB_MARK);
+  foreach ($files as $file) {
+      if (is_dir($file)) {
+          deleteDir($file);
+      } else {
+          unlink($file);
+      }
+  }
+  rmdir($dirPath);
+}
+
+function init_dir() {
+  if (!file_exists(SRC_DIR)) {
+    debug(sprintf('There is not source image directory: %s', SRC_DIR));
+    die();
+  }
+  
+  deleteDir(SRC_TMP_DIR);
+  deleteDir(DST_DIR);
+  deleteDir(DST_CSV_DIR);
+  
+  if (!file_exists(SRC_TMP_DIR) && !mkdir(SRC_TMP_DIR, 0777, true)) {
+    debug('Failed to create the temporary directory for image files.');
+  }
+  
+  if (!file_exists(DST_DIR) && !mkdir(DST_DIR, 0777, true)) {
+    debug('Failed to create the converted directory for image files.');
+  }
+  
+  if (!file_exists(DST_CSV_DIR) && !mkdir(DST_CSV_DIR, 0777, true)) {
+    debug('Failed to create the output directory for CSV files.');
+  }
 }
