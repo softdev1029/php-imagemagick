@@ -75,7 +75,8 @@ function make_csv_file($store) {
     'Size3',
     'Size4',
     'Size5',
-    'Size6'
+    'Size6',
+    'Error',
   );
   fputcsv($fp, $head);
   foreach ( $store->img_array as $img_item ) {

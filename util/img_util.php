@@ -4,12 +4,15 @@ function change_color_to_black($store) {
   foreach($store->img_array as $img_item) {
     $src = get_src_tmp_file_path($img_item->dst);
     $dst = get_dst_file_path(get_png_name($img_item->dst));
-    $cmd = "convert " . $src . " -colorspace LinearGray -flatten -fuzz 1% -trim +repage " . $dst;
+    $cmd = "convert $src -colorspace LinearGray -flatten -fuzz 1% -trim +repage $dst";
     exec($cmd);
     debug($cmd);
-    $cmd = "convert " . $dst . " -transparent white " . $dst;
+    $cmd = "convert $dst -transparent white $dst";
     exec($cmd);
     debug($cmd);
+    // $cmd = "convert $dst -negate -threshold 0 -negate $dst";
+    // exec($cmd);
+    // debug($cmd);
   }
 }
 
@@ -55,7 +58,7 @@ function resize_image(&$store) {
   } 
 }
 
-function merge_mark_desk($store) {
+function merge_mark_desk(&$store) {
   debug("Merging mark and desk...");
   foreach ($store->img_array as $img_item) {
     $i = 0;
@@ -63,24 +66,49 @@ function merge_mark_desk($store) {
     $dir = new DirectoryIterator($dir_name);
     foreach ($dir as $file_info) {
       if (!$file_info->isDot()) {
+        
+        // the desk image
         $desk = $file_info->getFilename();
         $desk = get_desk_file_path($desk);
 
+        // get the width of desk image
         $cmd = "identify -ping -format '%w' $desk";
         $desk_w = shell_exec($cmd);
         debug($cmd);
+
+        // get the height of desk image
+        $cmd = "identify -ping -format '%h' $desk";
+        $desk_h = shell_exec($cmd);
+        debug($cmd);
         
+        // the mark image
         $mark = get_dst_file_path(get_png_name($img_item->dst));
 
+        // get the width of mark image
         $cmd = "identify -ping -format '%w' $mark";
         $mark_w = shell_exec($cmd);
         debug($cmd);
 
-        $ratio = $desk_w / 3 / $mark_w * 100;
+        // get the height of mark image
+        $cmd = "identify -ping -format '%h' $mark";
+        $mark_h = shell_exec($cmd);
+        debug($cmd);
+
+        $ratio = MARK_RATIO;
+
+        // if resized mark height is larger than desk height
+        if ($mark_h * MARK_RATIO / 100 > $desk_h) {
+          $img_item->error = "decal too tall for mockup";
+        } else {
+          $img_item->error = "";
+        }
+
+        // resize mark image
         $cmd = "convert $mark -resize $ratio% tmp.png";
         exec($cmd);
         debug($cmd);
 
+        // merge mark and desk
         $dst = get_mockup_file_path(get_png_name($img_item->dst), $file_info->getFilename());
         $cmd = "magick $desk tmp.png -gravity center -compose over -composite " . $dst;
 
