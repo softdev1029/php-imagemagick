@@ -10,9 +10,15 @@ function change_color_to_black($store) {
     $cmd = "convert $dst -transparent white $dst";
     exec($cmd);
     debug($cmd);
-    // $cmd = "convert $dst -negate -threshold 0 -negate $dst";
-    // exec($cmd);
-    // debug($cmd);
+    $cmd = "convert $dst -negate -threshold 0 -negate $dst";
+    exec($cmd);
+    debug($cmd);
+    $cmd = "convert $dst -background black -alpha remove $dst";
+    exec($cmd);
+    debug($cmd);
+    $cmd = "convert $dst -transparent white $dst";
+    exec($cmd);
+    debug($cmd);
   }
 }
 
@@ -94,11 +100,15 @@ function merge_mark_desk(&$store) {
         $mark_h = shell_exec($cmd);
         debug($cmd);
 
-        $ratio = MARK_RATIO;
+        $mark_w_final = $desk_w * MARK_RATIO / 100;
+        $ratio = $mark_w_final / $mark_w * 100;
+        $mark_h_final = $mark_h * $ratio / 100;
+        $offset_y = $mark_h_final / 2;
 
         // if resized mark height is larger than desk height
-        if ($mark_h * MARK_RATIO / 100 > $desk_h) {
+        if ($mark_h_final > $desk_h / 2) {
           $img_item->error = "decal too tall for mockup";
+          debug("Error: mark height $mark_h_final is larger than half of desk height $desk_h");
         } else {
           $img_item->error = "";
         }
@@ -110,7 +120,7 @@ function merge_mark_desk(&$store) {
 
         // merge mark and desk
         $dst = get_mockup_file_path(get_png_name($img_item->dst), $file_info->getFilename());
-        $cmd = "magick $desk tmp.png -gravity center -compose over -composite " . $dst;
+        $cmd = "magick $desk tmp.png -gravity center -geometry -0-$offset_y -compose over -composite " . $dst;
 
         exec($cmd);
         debug($cmd);

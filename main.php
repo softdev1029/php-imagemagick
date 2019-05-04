@@ -19,8 +19,8 @@ get_image_dimen($store);
 
 resize_image($store);
 
-make_csv_file($store);
-
 merge_mark_desk($store);
+
+make_csv_file($store);
 
 // debug($store->img_array);
