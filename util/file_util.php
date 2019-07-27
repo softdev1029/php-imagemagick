@@ -44,7 +44,6 @@ function rename_files(&$store) {
   foreach ($dir as $file_info) {
     if (!$file_info->isDot()) {
       $src = $file_info->getFilename();
-      rename($src, str_replace("'", "_", $src));
       $dst = rename_file($src);
       $img_item = new ImageItem();
       $img_item->src = $src;
