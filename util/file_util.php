@@ -4,11 +4,17 @@ function get_png_name($svg_name) {
   return str_replace("svg", "png", $svg_name);
 }
 
-function get_src_file_path($file_name) {
+function get_src_file_path($file_name, $escape=true) {
+  if ($escape) {
+    return addslashes("" . SRC_DIR . "/" . $file_name . "");
+  }
   return "" . SRC_DIR . "/" . $file_name . "";
 }
 
-function get_src_tmp_file_path($file_name) {
+function get_src_tmp_file_path($file_name, $escape=true) {
+  if ($escape) {
+    return addslashes("" . SRC_TMP_DIR . "/" . $file_name . "");
+  }
   return "" . SRC_TMP_DIR . "/" . $file_name . "";
 }
 
@@ -50,8 +56,8 @@ function rename_files(&$store) {
       $img_item->dst = $dst;
       $store->add($img_item);
 
-      $src = get_src_file_path($img_item->src);
-      $dst = get_src_tmp_file_path($img_item->dst);
+      $src = get_src_file_path($img_item->src, false);
+      $dst = get_src_tmp_file_path($img_item->dst, false);
       copy($src, $dst);
       debug('src=' . $src . ', dst=' . $dst);
       $i++;
