@@ -5,18 +5,18 @@ function get_png_name($svg_name) {
 }
 
 function get_src_file_path($file_name) {
-  return SRC_DIR . "/" . $file_name;
+  return "\"" . SRC_DIR . "/" . $file_name . "\"";
 }
 
 function get_src_tmp_file_path($file_name) {
-  return SRC_TMP_DIR . "/" . $file_name;
+  return "\"" . SRC_TMP_DIR . "/" . $file_name . "\"";
 }
 
 function get_dst_file_path($file_name, $proportion = '0') {
   if ($proportion != '0') {
-    return DST_DIR . "/" . $proportion . "_" . $file_name;
+    return "\"" . DST_DIR . "/" . $proportion . "_" . $file_name . "\"";
   }
-  return DST_DIR . "/" . $file_name;
+  return "\"" . DST_DIR . "/" . $file_name . "\"";
 }
 
 function get_dst_csv_file_path() {
@@ -25,11 +25,11 @@ function get_dst_csv_file_path() {
 }
 
 function get_desk_file_path($file_name) {
-  return DESK_DIR . "/" . $file_name;
+  return "\"" . DESK_DIR . "/" . $file_name . "\"";
 }
 
 function get_mockup_file_path($mark, $desk) {
-  return MOCKUP_DIR . "/" . $mark . "_" . $desk;
+  return "\"" . MOCKUP_DIR . "/" . $mark . "_" . $desk . "\"";
 }
 
 function rename_file($src) {
