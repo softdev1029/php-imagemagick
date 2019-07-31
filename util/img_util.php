@@ -4,22 +4,22 @@ function change_color_to_black($store) {
   foreach($store->img_array as $img_item) {
     $src = get_src_tmp_file_path($img_item->dst);
     $dst = get_dst_file_path(get_png_name($img_item->dst));
-    // $cmd = "convert $src -colorspace LinearGray -flatten -fuzz 1% -trim +repage $dst";
+     $cmd = "convert $src -colorspace LinearGray -flatten -fuzz 1% -trim +repage $dst";
     $cmd = "convert $src -flatten -fuzz 1% -trim +repage $dst";
     exec($cmd);
     debug($cmd);
-    // $cmd = "convert $dst -fuzz 10% -transparent white $dst";
+    $cmd = "convert $dst -fuzz 10% -transparent white $dst";
     $cmd = "convert $dst -clone 0 -fuzz 11% -transparent white -blur 0x1 -compose copy_opacity -composite $dst";
     exec($cmd);
     debug($cmd);
-    // $cmd = "convert $dst -negate -threshold 0 -negate $dst";
-    // exec($cmd);
+     $cmd = "convert $dst -negate -threshold 0 -negate $dst";
+     exec($cmd);
     // debug($cmd);
-    // $cmd = "convert $dst -background black -alpha remove $dst";
-    // exec($cmd);
+     $cmd = "convert $dst -background black -alpha remove $dst";
+     exec($cmd);
     // debug($cmd);
-    // $cmd = "convert $dst -transparent white $dst";
-    // exec($cmd);
+     $cmd = "convert $dst -transparent white $dst";
+    exec($cmd);
     // debug($cmd);
   }
 }
