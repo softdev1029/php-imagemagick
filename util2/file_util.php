@@ -151,7 +151,7 @@ function init_dir() {
   }
   echo "\tFound the source image directory: " . SRC_DIR . PHP_EOL;
 
-  deleteDir(DST_DIR);
+  // deleteDir(DST_DIR);
   echo "\tDeleted the old directory: " . DST_DIR . PHP_EOL;
   
   if (!file_exists(DST_DIR) && !mkdir(DST_DIR, 0777, true)) {

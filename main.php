@@ -17,10 +17,10 @@ init_dir();
 init_store($store);
 
 // sale 4 types
-resize_image($store);
+// resize_image($store);
 
 // 12 inch
-// make_12_inch($store);
+make_12_inch($store);
 
 // rename_files($store);
 
