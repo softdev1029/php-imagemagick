@@ -30,7 +30,7 @@ function get_dpi($filepath) {
 function get_width($filepath) {
   echo "\t\tCalculating width..." . PHP_EOL;
 
-  $cmd = "identify -format %w $filepath";
+  $cmd = "identify -format %w " . addslashes($filepath);
   $width = exec($cmd);
   echo "\t\t\t" . $cmd . PHP_EOL;
   echo "\t\t\tWidth = $width" . PHP_EOL;
@@ -55,13 +55,13 @@ function make_target_inch(&$store, $inch) {
       echo "\t\tRepeat Count = $repeat" . PHP_EOL . PHP_EOL;
 
       echo "\t\tStacking vertically ..." . PHP_EOL;
-      $cmd = "convert -append $src $src $tmp";
+      $cmd = "convert -append " . addslashes($src) . " " . addslashes($src) . " " . $tmp;
       exec($cmd);
       echo "\t\t\t" . $cmd . PHP_EOL;
       echo "\t\tStacked vertically" . PHP_EOL . PHP_EOL;
 
       echo "\t\tStacking horizontally ..." . PHP_EOL;
-      $cmd = "convert +append $tmp $tmp $dst";
+      $cmd = "convert +append " . addslashes($tmp) . " " . addslashes($tmp) . " " . $dst;
       exec($cmd);
       echo "\t\t\t" . $cmd . PHP_EOL;
       echo "\t\tStacked horizontally" . PHP_EOL . PHP_EOL;
@@ -70,7 +70,7 @@ function make_target_inch(&$store, $inch) {
 
       echo "\t\tCropping ..." . PHP_EOL;
       $target_width = $dpi * $inch;
-      $cmd = "mogrify -crop $target_width" . "x" . "$target_width" . "+0+0 $dst";
+      $cmd = "mogrify -crop $target_width" . "x" . "$target_width" . "+0+0 " . addslashes($dst);
       exec($cmd);
       echo "\t\t\t$cmd" . PHP_EOL;
       echo "\t\tCropped" . PHP_EOL . PHP_EOL;
