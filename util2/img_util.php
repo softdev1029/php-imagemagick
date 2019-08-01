@@ -61,7 +61,7 @@ function make_target_inch(&$store, $inch) {
       echo "\t\tStacked vertically" . PHP_EOL . PHP_EOL;
 
       echo "\t\tStacking horizontally ..." . PHP_EOL;
-      $cmd = "convert +append \"" . addslashes($tmp) . "\" \"" . addslashes($tmp) . "\" " . $dst;
+      $cmd = "convert +append \"" . addslashes($tmp) . "\" \"" . addslashes($tmp) . "\" \"" . $dst . "\"";
       exec($cmd);
       echo "\t\t\t" . $cmd . PHP_EOL;
       echo "\t\tStacked horizontally" . PHP_EOL . PHP_EOL;
