@@ -20,7 +20,7 @@ init_store($store);
 // resize_image($store);
 
 // 12 inch
-make_12_inch($store);
+make_target_inch($store, 12);
 
 // rename_files($store);
 

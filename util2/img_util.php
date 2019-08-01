@@ -15,48 +15,66 @@ function resize_image(&$store) {
   echo "Resized." . PHP_EOL . PHP_EOL;
 }
 
-function get_inches($filepath) {
-  echo "\t\tCalculating inches..." . PHP_EOL;
-
-  $cmd = "identify -format %w $filepath";
-  $width = exec($cmd);
-  echo "\t\t\t" . $cmd . PHP_EOL;
-  echo "\t\t\tWidth = $width" . PHP_EOL;
+function get_dpi($filepath) {
+  echo "\t\tCalculating DPI..." . PHP_EOL;
 
   $cmd = "identify -format %x $filepath";
   $dpi = exec($cmd);
   echo "\t\t\t" . $cmd . PHP_EOL;
   echo "\t\t\tDPI = $dpi" . PHP_EOL;
 
-  $inches = $width / $dpi;
-  echo "\t\t\tinches = $inches" . PHP_EOL;
-
-  echo "\t\tCalculated inches." . PHP_EOL . PHP_EOL;
-  return $inches;
+  echo "\t\tCalculated DPI." . PHP_EOL . PHP_EOL;
+  return $dpi;
 }
 
-function make_12_inch(&$store) {
-  echo "Making 12 inch images..." . PHP_EOL;
+function get_width($filepath) {
+  echo "\t\tCalculating width..." . PHP_EOL;
+
+  $cmd = "identify -format %w $filepath";
+  $width = exec($cmd);
+  echo "\t\t\t" . $cmd . PHP_EOL;
+  echo "\t\t\tWidth = $width" . PHP_EOL;
+
+  echo "\t\tCalculated width." . PHP_EOL . PHP_EOL;
+  return $width;
+}
+
+function make_target_inch(&$store, $inch) {
+  echo "Making $inch inch images..." . PHP_EOL;
   foreach ($store->img_array as $img_item) {
     for ($i = 0; $i < count($img_item->dst); $i++) {
       $src = get_dst_file_path($img_item->dst[$i]);
       $dst = get_dst_file_path(rename_file_with_12_inch($img_item->dst[$i]));
       $tmp = get_dst_file_path("tmp.jpg");
       echo "\tFile: $src" . PHP_EOL;
-      $inches = get_inches($src);
-      $repeat = ceil(12 / $inches);
-      echo "\t\tRepeat Count = $repeat" . PHP_EOL;
+      $width = get_width($src);
+      $dpi = get_dpi($src);
+      $inches = $width / $dpi;
+      echo "\t\tinches = $inches" . PHP_EOL;
+      $repeat = ceil($inch / $inches);
+      echo "\t\tRepeat Count = $repeat" . PHP_EOL . PHP_EOL;
 
+      echo "\t\tStacking vertically ..." . PHP_EOL;
       $cmd = "convert -append $src $src $tmp";
       exec($cmd);
-      echo "\t\t" . $cmd . PHP_EOL;
+      echo "\t\t\t" . $cmd . PHP_EOL;
+      echo "\t\tStacked vertically" . PHP_EOL . PHP_EOL;
 
+      echo "\t\tStacking horizontally ..." . PHP_EOL;
       $cmd = "convert +append $tmp $tmp $dst";
       exec($cmd);
-      echo "\t\t" . $cmd . PHP_EOL;
+      echo "\t\t\t" . $cmd . PHP_EOL;
+      echo "\t\tStacked horizontally" . PHP_EOL . PHP_EOL;
 
       unlink($tmp);
+
+      echo "\t\tCropping ..." . PHP_EOL;
+      $target_width = $dpi * $inch;
+      $cmd = "mogrify -crop $target_width" . "x" . "$target_width" . "+0+0 $dst";
+      exec($cmd);
+      echo "\t\t\t$cmd" . PHP_EOL;
+      echo "\t\tCropped" . PHP_EOL . PHP_EOL;
     }
   }
-  echo "Made 12 inch images." . PHP_EOL . PHP_EOL;
+  echo "Made $inch inch images." . PHP_EOL . PHP_EOL;
 }
