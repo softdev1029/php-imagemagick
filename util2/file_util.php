@@ -52,9 +52,15 @@ function get_ext($file) {
   return $arr[$cnt - 1];
 }
 
-function rename_file($src, $scale) {
+function rename_file_with_scale($src, $scale) {
   $ext = get_ext($src);
   $dst = str_replace("." . $ext, "(" . $scale . ")." . $ext, $src);
+  return $dst;
+}
+
+function rename_file_with_12_inch($src) {
+  $ext = get_ext($src);
+  $dst = str_replace("." . $ext, "-12x12." . $ext, $src);
   return $dst;
 }
 
@@ -77,7 +83,7 @@ function init_store(&$store) {
         $img_item->dst = array();
 
         foreach (DST_INFO as $dst_info) {
-          $dst = rename_file($src, $dst_info["name"]);
+          $dst = rename_file_with_scale($src, $dst_info["name"]);
           array_push($img_item->dst, $dst);
           
           $src_path = get_src_file_path($img_item->src, false);

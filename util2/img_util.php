@@ -40,10 +40,22 @@ function make_12_inch(&$store) {
   foreach ($store->img_array as $img_item) {
     for ($i = 0; $i < count($img_item->dst); $i++) {
       $src = get_dst_file_path($img_item->dst[$i]);
+      $dst = get_dst_file_path(rename_file_with_12_inch($img_item->dst[$i]));
+      $tmp = get_dst_file_path("tmp.jpg");
       echo "\tFile: $src" . PHP_EOL;
       $inches = get_inches($src);
       $repeat = ceil(12 / $inches);
       echo "\t\tRepeat Count = $repeat" . PHP_EOL;
+
+      $cmd = "convert -append $src $src $tmp";
+      exec($cmd);
+      echo "\t\t" . $cmd . PHP_EOL;
+
+      $cmd = "convert +append $tmp $tmp $dst";
+      exec($cmd);
+      echo "\t\t" . $cmd . PHP_EOL;
+
+      unlink($tmp);
     }
   }
   echo "Made 12 inch images." . PHP_EOL . PHP_EOL;
