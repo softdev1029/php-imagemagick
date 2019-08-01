@@ -1,10 +1,23 @@
 <?php
 
-define("SRC_DIR", './image_origin');
-define("SRC_TMP_DIR", './image_origin_tmp');
-define("DST_DIR", './image_converted');
-define("DST_CSV_DIR", './csv_output');
-define("DESK_DIR", './image_desk');
-define("MOCKUP_DIR", './image_mockup');
-define("UNIT", 22); // pixels per inch
-define("MARK_RATIO", 35); // pixels per inch
+define("SRC_DIR", './InputPatterns');
+define("DST_DIR", './Output');
+
+define("DST_INFO",  array(
+  array(
+    "name" => "-25",
+    "scale" => "25"
+  ),
+  array(
+    "name" => "0",
+    "scale" => "100"
+  ),
+  array(
+    "name" => "25",
+    "scale" => "125"
+  ),
+  array(
+    "name" => "50",
+    "scale" => "150"
+  ),
+));
