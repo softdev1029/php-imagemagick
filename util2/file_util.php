@@ -64,6 +64,12 @@ function rename_file_with_12_inch($src) {
   return $dst;
 }
 
+function rename_final($src) {
+  $ext = get_ext($src);
+  $dst = str_replace("." . $ext, "-final." . $ext, $src);
+  return $dst;
+}
+
 function init_store(&$store) {
   echo "Initializing Store of Images ..." . PHP_EOL;
   $dir_name = SRC_DIR;
@@ -157,7 +163,7 @@ function init_dir() {
   }
   echo "\tFound the source image directory: " . SRC_DIR . PHP_EOL;
 
-  // deleteDir(DST_DIR);
+  deleteDir(DST_DIR);
   echo "\tDeleted the old directory: " . DST_DIR . PHP_EOL;
   
   if (!file_exists(DST_DIR) && !mkdir(DST_DIR, 0777, true)) {

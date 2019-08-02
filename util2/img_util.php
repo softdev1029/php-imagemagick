@@ -78,3 +78,52 @@ function make_target_inch(&$store, $inch) {
   }
   echo "Made $inch inch images." . PHP_EOL . PHP_EOL;
 }
+
+function merge_4_types(&$store) {
+  echo "Resizing images..." . PHP_EOL;
+  foreach ($store->img_array as $img_item) {
+    for ($i = 0; $i < count($img_item->dst); $i++) {
+      $dst = get_dst_file_path(rename_file_with_12_inch($img_item->dst[$i]));
+      echo "\tFile: $dst" . PHP_EOL;
+      
+      echo "\t\tResizing to 1000px ..." . PHP_EOL;
+      $cmd = "convert \"" . addslashes($dst) . "\" -resize 1000x1000 \"" . addslashes($dst) . "\"";
+      echo "\t\t\t$cmd" . PHP_EOL;
+      exec($cmd);
+      echo "\t\tResized" . PHP_EOL . PHP_EOL;
+    }
+  }
+  echo "Resized." . PHP_EOL . PHP_EOL;
+
+  echo "Merging 4 type images..." . PHP_EOL;
+  foreach ($store->img_array as $img_item) {
+    echo "\tFile: $img_item->src" . PHP_EOL;
+    $dst0 = get_dst_file_path(rename_file_with_12_inch($img_item->dst[0]));
+    $dst1 = get_dst_file_path(rename_file_with_12_inch($img_item->dst[1]));
+    $dst2 = get_dst_file_path(rename_file_with_12_inch($img_item->dst[2]));
+    $dst3 = get_dst_file_path(rename_file_with_12_inch($img_item->dst[3]));
+    $final = get_dst_file_path(rename_final($img_item->src));
+
+    $tmp_dst_4_2 = get_dst_file_path("tmp_4_2.jpg");
+    $tmp_dst_3_1 = get_dst_file_path("tmp_3_1.jpg");
+    
+    echo "\t\tStacking 4th and 2nd vertically ..." . PHP_EOL;
+    $cmd = "convert -append \"" . addslashes($dst3) . "\" \"" . addslashes($dst1) . "\" \"" . $tmp_dst_4_2 . "\"";
+    exec($cmd);
+    echo "\t\t\t" . $cmd . PHP_EOL;
+    echo "\t\tStacked 4th and 2nd vertically" . PHP_EOL . PHP_EOL;
+
+    echo "\t\tStacking 3rd and 1st vertically ..." . PHP_EOL;
+    $cmd = "convert -append \"" . addslashes($dst2) . "\" \"" . addslashes($dst0) . "\" \"" . $tmp_dst_3_1 . "\"";
+    exec($cmd);
+    echo "\t\t\t" . $cmd . PHP_EOL;
+    echo "\t\tStacked 3rd and 1st vertically" . PHP_EOL . PHP_EOL;
+
+    echo "\t\tStacking horizontally ..." . PHP_EOL;
+    $cmd = "convert +append \"" . addslashes($tmp_dst_4_2) . "\" \"" . addslashes($tmp_dst_3_1) . "\" \"" . $final . "\"";
+    exec($cmd);
+    echo "\t\t\t" . $cmd . PHP_EOL;
+    echo "\t\tStacked horizontally" . PHP_EOL . PHP_EOL;
+  }
+  echo "Merged 4 type images." . PHP_EOL . PHP_EOL;
+}
