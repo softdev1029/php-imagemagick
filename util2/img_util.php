@@ -7,7 +7,7 @@ function resize_image(&$store) {
       $src = get_dst_file_path($img_item->dst[$i]);
       $dst = $src;
       $ratio = DST_INFO[$i]["scale"];
-      $cmd = "convert " . $src . " -resize " . $ratio . "% " . $dst;
+      $cmd = "convert \"" . $src . "\" -resize " . $ratio . "% \"" . $dst . "\"";
       exec($cmd);
       echo "\t" . $cmd . PHP_EOL;
     }
