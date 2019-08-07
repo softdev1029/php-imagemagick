@@ -54,19 +54,35 @@ function make_target_inch(&$store, $inch) {
       $repeat = ceil($inch / $inches);
       echo "\t\tRepeat Count = $repeat" . PHP_EOL . PHP_EOL;
 
-      echo "\t\tStacking vertically ..." . PHP_EOL;
-      $cmd = "convert -append \"" . addslashes($src) . "\" \"" . addslashes($src) . "\" " . $tmp;
-      exec($cmd);
-      echo "\t\t\t" . $cmd . PHP_EOL;
-      echo "\t\tStacked vertically" . PHP_EOL . PHP_EOL;
+      if ($repeat > 1) {
+        $cnt = 1;
+        copy($src, $tmp);
+        while ($cnt != $repeat) {
+          echo "\t\tStacking vertically $cnt th ..." . PHP_EOL;
+          $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . $tmp;
+          exec($cmd);
+          echo "\t\t\t" . $cmd . PHP_EOL;
+          echo "\t\tStacked vertically $cnt th" . PHP_EOL . PHP_EOL;
 
-      echo "\t\tStacking horizontally ..." . PHP_EOL;
-      $cmd = "convert +append \"" . addslashes($tmp) . "\" \"" . addslashes($tmp) . "\" \"" . $dst . "\"";
-      exec($cmd);
-      echo "\t\t\t" . $cmd . PHP_EOL;
-      echo "\t\tStacked horizontally" . PHP_EOL . PHP_EOL;
+          $cnt++;
+        }
 
-      unlink($tmp);
+        $cnt = 1;
+        copy($tmp, $dst);
+        while ($cnt != $repeat) {
+          echo "\t\tStacking horizontally $cnt th ..." . PHP_EOL;
+          $cmd = "convert +append \"" . addslashes($dst) . "\" \"" . addslashes($tmp) . "\" \"" . $dst . "\"";
+          exec($cmd);
+          echo "\t\t\t" . $cmd . PHP_EOL;
+          echo "\t\tStacked horizontally $cnt th" . PHP_EOL . PHP_EOL;
+
+          $cnt++;
+        }
+
+        unlink($tmp);
+      } else {
+        copy($src, $dst);
+      }
 
       echo "\t\tCropping ..." . PHP_EOL;
       $target_width = $dpi * $inch;
