@@ -19,8 +19,8 @@ init_store($store);
 // sale 4 types
 resize_image($store);
 
-// 12 inch
-make_target_inch($store, 12);
+// scale to the target inch
+make_target_inch($store, DST_INCH);
 
 // merge 4 types
 merge_4_types($store);

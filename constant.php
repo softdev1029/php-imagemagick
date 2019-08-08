@@ -4,6 +4,7 @@ define("SRC_DIR", './InputPatterns');
 define("DST_DIR", './Output');
 
 define("DST_DPI", '300');
+define("DST_INCH", '12');
 
 define("DST_INFO",  array(
   array(
