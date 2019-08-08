@@ -5,4 +5,5 @@ class ImageItem {
   public $dst;
   public $w;
   public $h;
+  public $scale;
 }

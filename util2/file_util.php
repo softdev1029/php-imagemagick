@@ -75,39 +75,49 @@ function init_store(&$store) {
   $dir_name = SRC_DIR;
   $dir = new DirectoryIterator($dir_name);
 
-  echo "\tLopping the input directory: " . SRC_DIR . PHP_EOL;
-  foreach ($dir as $file_info) {
-
-    if (!$file_info->isDot()) {
-
-      $src = $file_info->getFilename();
-      if (check_ext($src)) {
-        echo "\t\tFile: " . $src . PHP_EOL;
-
-        $img_item = new ImageItem();
-        $img_item->src = $src;
-        $img_item->dst = array();
-
-        $src_path = get_src_file_path($img_item->src, false);
-
-        // change density
-        change_density($src_path);
-
-        foreach (DST_INFO as $dst_info) {
-          $dst = rename_file_with_scale($src, $dst_info["name"]);
-          array_push($img_item->dst, $dst);
+  echo "\tLopping the input CSV file: " . SRC_DIR . "/" . SRC_CSV . PHP_EOL;
+  $row = 1;
+  if (($handle = fopen(SRC_DIR . "/" . SRC_CSV, "r")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+          $num = count($data);
+          $row++;
           
-          $dst = get_dst_file_path($dst, false);
-          copy($src_path, $dst);
-          echo "\t\t Copied file: src=" . $src_path . ", dst=" . $dst . PHP_EOL;
-        }
+          $src = $data[0];
 
-        $store->add($img_item);
-      } else {
-        echo "\t\tSkipped File: " . $src . PHP_EOL;
+          if (!file_exists(get_src_file_path($src, false))) {
+            echo "\t\tFile not exist: " . $src . PHP_EOL;
+            continue;
+          }
+          echo "\t\tFile: " . $src . PHP_EOL;
+
+          $img_item = new ImageItem();
+          $img_item->src = $src;
+          $img_item->dst = array();
+          $img_item->scale = array();
+
+          $src_path = get_src_file_path($img_item->src, false);
+
+          // change density
+          change_density($src_path);
+
+          foreach ($data as $scale) {
+            if ($scale == $src) {
+              continue;
+            }
+            $dst = rename_file_with_scale($src, $scale);
+            array_push($img_item->dst, $dst);
+            array_push($img_item->scale, $scale);
+            
+            $dst = get_dst_file_path($dst, false);
+            copy($src_path, $dst);
+            echo "\t\t Copied file: src=" . $src_path . ", dst=" . $dst . PHP_EOL;
+          }
+
+          $store->add($img_item);
       }
-    }
+      fclose($handle);
   }
+
   echo "Initialized Store of Images." . PHP_EOL . PHP_EOL;
 }
 
@@ -176,4 +186,19 @@ function init_dir() {
   echo "\tMade the destination directory: " . DST_DIR . PHP_EOL;
 
   echo "Initialized Directories." . PHP_EOL . PHP_EOL;
+}
+
+function read_csv($src) {
+  $row = 1;
+  if (($handle = fopen($src, "r")) !== FALSE) {
+      while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+          $num = count($data);
+          echo "$num fields in line $row: \n";
+          $row++;
+          for ($c=0; $c < $num; $c++) {
+              echo "\t" . $data[$c] . "\n";
+          }
+      }
+      fclose($handle);
+  }
 }

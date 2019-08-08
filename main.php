@@ -13,6 +13,8 @@ $store = new Store();
 
 init_dir();
 
+// read_csv(SRC_DIR . "/" . SRC_CSV);
+
 // copy 4 scaled types (not scaled yet)
 init_store($store);
 
