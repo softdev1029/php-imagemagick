@@ -88,11 +88,15 @@ function init_store(&$store) {
         $img_item->src = $src;
         $img_item->dst = array();
 
+        $src_path = get_src_file_path($img_item->src, false);
+
+        // change density
+        change_density($src_path);
+
         foreach (DST_INFO as $dst_info) {
           $dst = rename_file_with_scale($src, $dst_info["name"]);
           array_push($img_item->dst, $dst);
           
-          $src_path = get_src_file_path($img_item->src, false);
           $dst = get_dst_file_path($dst, false);
           copy($src_path, $dst);
           echo "\t\t Copied file: src=" . $src_path . ", dst=" . $dst . PHP_EOL;

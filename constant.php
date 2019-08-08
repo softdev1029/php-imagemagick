@@ -3,6 +3,8 @@
 define("SRC_DIR", './InputPatterns');
 define("DST_DIR", './Output');
 
+define("DST_DPI", '300');
+
 define("DST_INFO",  array(
   array(
     "name" => "-25",

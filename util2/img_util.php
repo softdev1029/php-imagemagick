@@ -1,5 +1,17 @@
 <?php
 
+function change_density($src) {
+  $dpi = get_dpi($src);
+  if ($dpi < DST_DPI) {
+    echo "\t\t\tStarting change density..." . PHP_EOL;
+    $dst = $src;
+    $cmd = "convert \"" . $src . "\" -density " . DST_DPI . "% \"" . $dst . "\"";
+    exec($cmd);
+    echo "\t\t\t" . $cmd . PHP_EOL;
+    echo "\t\t\tChanged density." . PHP_EOL . PHP_EOL;
+  }
+}
+
 function resize_image(&$store) {
   echo "Starting resize..." . PHP_EOL;
   foreach ($store->img_array as $img_item) {
