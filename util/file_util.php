@@ -44,6 +44,7 @@ function rename_file($src) {
 }
 
 function rename_files(&$store) {
+  echo "Copying files to the temporary folder..." . PHP_EOL;
   $i = 0;
   $dir_name = SRC_DIR;
   $dir = new DirectoryIterator($dir_name);
@@ -59,10 +60,11 @@ function rename_files(&$store) {
       $src = get_src_file_path($img_item->src, false);
       $dst = get_src_tmp_file_path($img_item->dst, false);
       copy($src, $dst);
-      debug('src=' . $src . ', dst=' . $dst);
+      echo "\tCopy src= $src, dst= $dst" . PHP_EOL;
       $i++;
     }
   }
+  echo "Copied." . PHP_EOL . PHP_EOL;
 }
 
 function make_csv_file($store) {

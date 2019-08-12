@@ -17,7 +17,7 @@ change_color_to_black($store);
 
 get_image_dimen($store);
 
-resize_image($store);
+// resize_image($store);
 
 merge_mark_desk($store);
 

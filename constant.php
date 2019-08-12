@@ -8,3 +8,4 @@ define("DESK_DIR", './image_desk');
 define("MOCKUP_DIR", './image_mockup');
 define("UNIT", 22); // pixels per inch
 define("MARK_RATIO", 35); // pixels per inch
+define("FINAL_WIDTH", 2000); // pixels
