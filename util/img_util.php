@@ -109,6 +109,8 @@ function merge_mark_desk(&$store) {
         $mark_h_final = $mark_h * $ratio / 100;
         $offset_y = $mark_h_final / 2;
 
+        echo "\t\t\t Mark final w=$mark_w_final, h=$mark_h_final, ratio=$ratio" . PHP_EOL;
+
         // if resized mark height is larger than desk height
         if ($mark_h_final > $desk_h / 2) {
           $img_item->error = "decal too tall for mockup";
@@ -131,8 +133,6 @@ function merge_mark_desk(&$store) {
 
         unlink("tmp.png");
 
-        insert_white_space($dst);
-        
         $i++;
       }
     }
