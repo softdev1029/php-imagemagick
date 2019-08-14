@@ -6,7 +6,7 @@ function change_color_to_black($store) {
     echo "\tFile: $img_item->dst" . PHP_EOL;
     $src = get_src_tmp_file_path($img_item->dst);
     $dst = get_dst_file_path(get_png_name($img_item->dst));
-    $cmd = "convert -background none -size 2000x2000 $src $dst";
+    $cmd = "convert -background none $src $dst";
     exec($cmd);
     echo "\t\t$cmd" . PHP_EOL;
     echo "\t\tRemoved the background." . PHP_EOL;
@@ -133,6 +133,7 @@ function merge_mark_desk(&$store) {
 
         unlink("tmp.png");
 
+        insert_white_space($dst);
         $i++;
       }
     }
