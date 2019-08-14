@@ -35,7 +35,17 @@ function get_desk_file_path($file_name) {
 }
 
 function get_mockup_file_path($mark, $desk) {
-  return addslashes("" . MOCKUP_DIR . "/" . $mark . "_" . $desk . "");
+  return addslashes("" . MOCKUP_DIR . "/" . remove_ext($mark) . "_" . $desk . "");
+}
+
+function get_ext($file) {
+  $arr = explode(".", $file);
+  $cnt = count($arr);
+  return $arr[$cnt - 1];
+}
+
+function remove_ext($file) {
+  return str_replace("." . get_ext($file), "", $file);
 }
 
 function rename_file($src) {
