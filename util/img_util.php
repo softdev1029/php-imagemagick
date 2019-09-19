@@ -122,11 +122,11 @@ function merge_order($order, $level) {
   for ($i = 1; $i < count($order->items); $i++) {
     
     $tile = $order->items[$i];
-    echo indent($level+1) . "File: $tile->src" . PHP_EOL;
+    echo indent($level+1) . "File: $tile->dst" . PHP_EOL;
 
     if ($i == 1) {
-      $prev_tile = $order->items[$i];
-      echo indent($level+1) . "Prev File: $prev_tile->src" . PHP_EOL;
+      $prev_tile = $order->items[$i-1];
+      echo indent($level+1) . "Prev File: $prev_tile->dst" . PHP_EOL;
       $dst0 = get_dst_file_path(rename_file_with_12_inch($prev_tile->dst));
     } else {
       $dst0 = $final;
