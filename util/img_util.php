@@ -1,136 +1,144 @@
 <?php
 
-function change_color_to_black($store) {
-  foreach($store->img_array as $img_item) {
-    $src = get_src_tmp_file_path($img_item->dst);
-    $dst = get_dst_file_path(get_png_name($img_item->dst));
-     $cmd = "convert $src -colorspace LinearGray -flatten -fuzz 1% -trim +repage $dst";
-    $cmd = "convert $src -flatten -fuzz 1% -trim +repage $dst";
+function change_density($src, $level) {
+  $dpi = get_dpi($src, $level);
+  if ($dpi < DST_DPI) {
+    echo indent($level) . "Starting change density..." . PHP_EOL;
+    $dst = $src;
+    $cmd = "convert \"" . $src . "\" -density " . DST_DPI . "% \"" . $dst . "\"";
     exec($cmd);
-    debug($cmd);
-    $cmd = "convert $dst -fuzz 10% -transparent white $dst";
-    $cmd = "convert $dst -clone 0 -fuzz 11% -transparent white -blur 0x1 -compose copy_opacity -composite $dst";
-    exec($cmd);
-    debug($cmd);
-     $cmd = "convert $dst -negate -threshold 0 -negate $dst";
-     exec($cmd);
-    // debug($cmd);
-     $cmd = "convert $dst -background black -alpha remove $dst";
-     exec($cmd);
-    // debug($cmd);
-     $cmd = "convert $dst -transparent white $dst";
-    exec($cmd);
-    // debug($cmd);
+    echo indent($level) . $cmd . PHP_EOL;
+    echo indent($level) . "Changed density." . PHP_EOL . PHP_EOL;
   }
 }
 
-function get_image_dimen(&$store) {
-  foreach ($store->img_array as $img_item) {
-    $src = get_src_tmp_file_path($img_item->dst);
-    $dst = get_dst_file_path(get_png_name($img_item->dst));
-    $cmd = "identify -ping -format '%w' $dst";
-    $rlt = shell_exec($cmd);
-    $img_item->w = $rlt;
-    debug('w=' . $rlt);
-
-    $cmd = "identify -ping -format '%h' $dst";
-    $rlt = shell_exec($cmd);
-    $img_item->h = $rlt;
-    debug('h=' . $rlt);
-  }
+function resize_image($file, $scale, $level) {
+  echo indent($level) . "Starting resize: $file ..." . PHP_EOL;
+  $src = get_dst_file_path($file);
+  $dst = $src;
+  $ratio = $scale;
+  $cmd = "convert \"" . $src . "\" -resize " . $ratio . "% \"" . $dst . "\"";
+  exec($cmd);
+  echo indent($level+1) . $cmd . PHP_EOL;
+  echo indent($level) . "Resized." . PHP_EOL . PHP_EOL;
 }
 
-function resize_image(&$store) {
-  debug("Starting resize...");
-  foreach ($store->img_array as $img_item) {
-    $i = 1;
-    foreach ($store->proportion_array as $proportion) {
-      $src = get_dst_file_path(get_png_name($img_item->dst));
-      $dst = get_dst_file_path(get_png_name($img_item->dst), $proportion['type'] . $proportion['size']);
-      $size = 'size' . $i;
-      $ratio = $img_item->w / $img_item->h;
-      if ($proportion['type'] == 'w') {
-        $rw = $proportion['size'] * UNIT;
-        $rh = $rw / $img_item->w * $img_item->h;
-      } else {
-        $rh = $proportion['size'] * UNIT;
-        $rw = $rh / $img_item->h * $img_item->w;
-      }
-      $ratio = $rw / $img_item->w * 100;
-      $img_item->$size = "w=" . ($rw / UNIT) . ", h=" . ($rh / UNIT);
-      $cmd = "convert " . $src . " -resize " . $ratio . "% " . $dst;
+function get_dpi($filepath, $level) {
+  echo indent($level) . "Calculating DPI..." . PHP_EOL;
+
+  $cmd = "identify -format %x \"" . addslashes($filepath) . "\"";
+  $dpi = exec($cmd);
+  echo indent($level+1) . $cmd . PHP_EOL;
+  echo indent($level+1) . "DPI = $dpi" . PHP_EOL;
+
+  echo indent($level) . "Calculated DPI." . PHP_EOL . PHP_EOL;
+  return $dpi;
+}
+
+function get_width($filepath, $level) {
+  echo indent($level) . "Calculating width..." . PHP_EOL;
+
+  $cmd = "identify -format %w \"" . addslashes($filepath) . "\"";
+  $width = exec($cmd);
+  echo indent($level+1) . $cmd . PHP_EOL;
+  echo indent($level+1) . "Width = $width" . PHP_EOL;
+
+  echo indent($level) . "Calculated width." . PHP_EOL . PHP_EOL;
+  return $width;
+}
+
+function make_target_inch($file, $inch, $level) {
+  echo indent($level) . "Making $inch inch images: $file ..." . PHP_EOL;
+  $src = get_dst_file_path($file);
+  $dst = get_dst_file_path(rename_file_with_12_inch($file));
+  $tmp = get_dst_file_path("tmp.jpg");
+  echo indent($level+1) . "File: $src" . PHP_EOL;
+  $width = get_width($src, $level+2);
+  $dpi = get_dpi($src, $level+2);
+  $inches = $width / $dpi;
+  echo indent($level+2) . "inches = $inches" . PHP_EOL;
+  $repeat = ceil($inch / $inches);
+  echo indent($level+2) . "Repeat Count = $repeat" . PHP_EOL . PHP_EOL;
+
+  if ($repeat > 1) {
+    $cnt = 1;
+    copy($src, $tmp);
+    while ($cnt != $repeat) {
+      echo indent($level+2) . "Stacking vertically $cnt th ..." . PHP_EOL;
+      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . $tmp;
       exec($cmd);
-      debug($cmd);
-      $i++;
+      echo indent($level+3) . "" . $cmd . PHP_EOL;
+      echo indent($level+2) . "Stacked vertically $cnt th" . PHP_EOL . PHP_EOL;
+
+      $cnt++;
     }
-  } 
+
+    $cnt = 1;
+    copy($tmp, $dst);
+    while ($cnt != $repeat) {
+      echo indent($level+2) . "Stacking horizontally $cnt th ..." . PHP_EOL;
+      $cmd = "convert +append \"" . addslashes($dst) . "\" \"" . addslashes($tmp) . "\" \"" . $dst . "\"";
+      exec($cmd);
+      echo indent($level+3) . $cmd . PHP_EOL;
+      echo indent($level+2) . "Stacked horizontally $cnt th" . PHP_EOL . PHP_EOL;
+
+      $cnt++;
+    }
+
+    unlink($tmp);
+  } else {
+    copy($src, $dst);
+  }
+
+  echo indent($level+2) . "Cropping ..." . PHP_EOL;
+  $target_width = $dpi * $inch;
+  $cmd = "mogrify -crop $target_width" . "x" . "$target_width" . "+0+0 \"" . addslashes($dst) . "\"";
+  exec($cmd);
+  echo indent($level+3) . "$cmd" . PHP_EOL;
+  echo indent($level+2) . "Cropped" . PHP_EOL . PHP_EOL;
+  echo indent($level) . "Made $inch inch images." . PHP_EOL . PHP_EOL;
 }
 
-function merge_mark_desk(&$store) {
-  debug("Merging mark and desk...");
-  foreach ($store->img_array as $img_item) {
-    $i = 0;
-    $dir_name = DESK_DIR;
-    $dir = new DirectoryIterator($dir_name);
-    foreach ($dir as $file_info) {
-      if (!$file_info->isDot()) {
-        
-        // the desk image
-        $desk = $file_info->getFilename();
-        $desk = get_desk_file_path($desk);
-
-        // get the width of desk image
-        $cmd = "identify -ping -format '%w' $desk";
-        $desk_w = shell_exec($cmd);
-        debug($cmd);
-
-        // get the height of desk image
-        $cmd = "identify -ping -format '%h' $desk";
-        $desk_h = shell_exec($cmd);
-        debug($cmd);
-        
-        // the mark image
-        $mark = get_dst_file_path(get_png_name($img_item->dst));
-
-        // get the width of mark image
-        $cmd = "identify -ping -format '%w' $mark";
-        $mark_w = shell_exec($cmd);
-        debug($cmd);
-
-        // get the height of mark image
-        $cmd = "identify -ping -format '%h' $mark";
-        $mark_h = shell_exec($cmd);
-        debug($cmd);
-
-        $mark_w_final = $desk_w * MARK_RATIO / 100;
-        $ratio = $mark_w_final / $mark_w * 100;
-        $mark_h_final = $mark_h * $ratio / 100;
-        $offset_y = $mark_h_final / 2;
-
-        // if resized mark height is larger than desk height
-        if ($mark_h_final > $desk_h / 2) {
-          $img_item->error = "decal too tall for mockup";
-          debug("Error: mark height $mark_h_final is larger than half of desk height $desk_h");
-        } else {
-          $img_item->error = "";
-        }
-
-        // resize mark image
-        $cmd = "convert $mark -resize $ratio% tmp.png";
-        exec($cmd);
-        debug($cmd);
-
-        // merge mark and desk
-        $dst = get_mockup_file_path(get_png_name($img_item->dst), $file_info->getFilename());
-        $cmd = "magick $desk tmp.png -gravity center -geometry -0-$offset_y -compose over -composite " . $dst;
-
-        exec($cmd);
-        debug($cmd);
-
-        unlink("tmp.png");
-
-        $i++;
-      }
-    }
+function merge_order($order, $level) {
+  echo indent($level) . "Resizing images..." . PHP_EOL;
+  if (!isset($order->items)) {
+    return;
   }
+  for ($i = 0; $i < count($order->items); $i++) {
+    $dst = get_dst_file_path(rename_file_with_12_inch($order->items[$i]->dst));
+    echo indent($level+1) . "File: $dst" . PHP_EOL;
+    
+    echo indent($level+2) . "Resizing to 1000px ..." . PHP_EOL;
+    $cmd = "convert \"" . addslashes($dst) . "\" -resize 1000x1000 \"" . addslashes($dst) . "\"";
+    echo indent($level+3) . $cmd . PHP_EOL;
+    exec($cmd);
+    echo indent($level+2) . "Resized" . PHP_EOL . PHP_EOL;
+  }
+  echo indent($level) . "Resized." . PHP_EOL . PHP_EOL;
+
+  echo indent($level) . "Merging order images..." . PHP_EOL;
+
+  $final = get_dst_file_path("order-" . $order->order_num . ".jpg");
+  for ($i = 1; $i < count($order->items); $i++) {
+    
+    $tile = $order->items[$i];
+    echo indent($level+1) . "File: $tile->src" . PHP_EOL;
+
+    if ($i == 1) {
+      $prev_tile = $order->items[$i];
+      echo indent($level+1) . "Prev File: $prev_tile->src" . PHP_EOL;
+      $dst0 = get_dst_file_path(rename_file_with_12_inch($prev_tile->dst));
+    } else {
+      $dst0 = $final;
+    }
+    $dst1 = get_dst_file_path(rename_file_with_12_inch($tile->dst));
+
+    echo indent($level+2) . "Stacking 2 tiles vertically ..." . PHP_EOL;
+    $cmd = "convert -append \"" . addslashes($dst0) . "\" \"" . addslashes($dst1) . "\" \"" . $final . "\"";
+    exec($cmd);
+    echo indent($level+3) . $cmd . PHP_EOL;
+    echo indent($level+2) . "Stacked 2 tiles vertically" . PHP_EOL . PHP_EOL;
+
+  }
+  echo indent($level) . "Merged order images." . PHP_EOL . PHP_EOL;
 }

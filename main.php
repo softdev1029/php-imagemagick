@@ -2,41 +2,24 @@
 
 include 'constant.php';
 include 'model/ImageItem.php';
-include 'model/Store.php';
-include 'util2/log_util.php';
-include 'util2/file_util.php';
-include 'util2/img_util.php';
+include 'model/TileItem.php';
+include 'model/OrderItem.php';
+include 'model/TileStore.php';
+include 'model/OrderStore.php';
+include 'util/log_util.php';
+include 'util/file_util.php';
+include 'util/img_util.php';
 
-$store = new Store();
-
-// resize_svg('./PatternTile/InputPatterns', 'pattern-01.svg', 1000, 1000);
+$tile_store = new TileStore();
+$order_store = new OrderStore();
 
 init_dir();
 
-// read_csv(SRC_DIR . "/" . SRC_CSV);
+// read the tile CSV file and initialize the store of tiles
+read_tile_csv($tile_store, 0);
 
-// copy 4 scaled types (not scaled yet)
-init_store($store);
+//
+read_order_csv($tile_store, $order_store, 0);
 
-// sale 4 types
-resize_image($store);
-
-// scale to the target inch
-make_target_inch($store, DST_INCH);
-
-// merge 4 types
-merge_4_types($store);
-
-// rename_files($store);
-
-// change_color_to_black($store);
-
-// get_image_dimen($store);
-
-// resize_image($store);
-
-// merge_mark_desk($store);
-
-// make_csv_file($store);
-
-// debug($store->img_array);
+//
+merge_orders($order_store, 0);
