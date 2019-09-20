@@ -213,6 +213,9 @@ function read_order_csv(&$tile_store, &$order_store, $level) {
           // make target inch
           make_target_inch($dst, $tile_item->w, $level+4);
 
+          // repeated tile according to width, height
+          repeat_image($dst, $tile_item->h / $tile_item->w, $level+4);
+
           $order_item->add($tile_item->sku_id, $tile_item);
       }
       fclose($handle);

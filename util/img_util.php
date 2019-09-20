@@ -108,6 +108,30 @@ function rotate_image($file, $value, $level) {
   echo indent($level) . "Rotated $value." . PHP_EOL . PHP_EOL;
 }
 
+function repeat_image($file, $repeat, $level) {
+  echo indent($level) . "Repeating $repeat times with the image: $file ..." . PHP_EOL;
+  $src = get_dst_file_path(rename_file_with_12_inch($file));
+  $tmp = get_dst_file_path("tmp.jpg");
+  
+  if ($repeat > 1) {
+    $cnt = 1;
+    copy($src, $tmp);
+    while ($cnt != $repeat) {
+      echo indent($level+1) . "Stacking vertically $cnt th ..." . PHP_EOL;
+      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . $src;
+      exec($cmd);
+      echo indent($level+2) . "" . $cmd . PHP_EOL;
+      echo indent($level+1) . "Stacked vertically $cnt th" . PHP_EOL . PHP_EOL;
+
+      $cnt++;
+    }
+
+    unlink($tmp);
+  }
+
+  echo indent($level) . "Repeated $repeat times." . PHP_EOL . PHP_EOL;
+}
+
 function merge_order($order, $level) {
 
   echo indent($level) . "Merging order images..." . PHP_EOL;
