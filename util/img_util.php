@@ -109,21 +109,6 @@ function rotate_image($file, $value, $level) {
 }
 
 function merge_order($order, $level) {
-  echo indent($level) . "Resizing images..." . PHP_EOL;
-  if (!isset($order->items)) {
-    return;
-  }
-  for ($i = 0; $i < count($order->items); $i++) {
-    $dst = get_dst_file_path(rename_file_with_12_inch($order->items[$i]->dst));
-    echo indent($level+1) . "File: $dst" . PHP_EOL;
-    
-    echo indent($level+2) . "Resizing to 1000px ..." . PHP_EOL;
-    $cmd = "convert \"" . addslashes($dst) . "\" -resize 1000x1000 \"" . addslashes($dst) . "\"";
-    echo indent($level+3) . $cmd . PHP_EOL;
-    exec($cmd);
-    echo indent($level+2) . "Resized" . PHP_EOL . PHP_EOL;
-  }
-  echo indent($level) . "Resized." . PHP_EOL . PHP_EOL;
 
   echo indent($level) . "Merging order images..." . PHP_EOL;
 
