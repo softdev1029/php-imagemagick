@@ -151,11 +151,19 @@ function merge_order($order, $level) {
     }
     $dst1 = get_dst_file_path(rename_file_with_12_inch($tile->dst));
 
-    echo indent($level+2) . "Stacking 2 tiles vertically ..." . PHP_EOL;
-    $cmd = "convert -append \"" . addslashes($dst0) . "\" \"" . addslashes($dst1) . "\" \"" . $final . "\"";
+    // the first tile + pre pattern file
+    echo indent($level+2) . "Stacking [the first tile] and [pre pattern] vertically ..." . PHP_EOL;
+    $cmd = "convert -append \"" . addslashes($dst0) . "\" \"" . addslashes(PRE_PATTERN_FILE) . "\" \"" . $final . "\"";
     exec($cmd);
     echo indent($level+3) . $cmd . PHP_EOL;
-    echo indent($level+2) . "Stacked 2 tiles vertically" . PHP_EOL . PHP_EOL;
+    echo indent($level+2) . "Stacked vertically" . PHP_EOL . PHP_EOL;
+
+    // then put more the second tile
+    echo indent($level+2) . "Stacking [the second tile] vertically ..." . PHP_EOL;
+    $cmd = "convert -append \"" . addslashes($final) . "\" \"" . addslashes($dst1) . "\" \"" . $final . "\"";
+    exec($cmd);
+    echo indent($level+3) . $cmd . PHP_EOL;
+    echo indent($level+2) . "Stacked vertically" . PHP_EOL . PHP_EOL;
 
   }
   echo indent($level) . "Merged order images." . PHP_EOL . PHP_EOL;
