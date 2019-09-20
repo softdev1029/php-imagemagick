@@ -52,9 +52,9 @@ function get_ext($file) {
   return $arr[$cnt - 1];
 }
 
-function rename_file_with_scale($src, $scale) {
+function rename_file_with_scale($src, $scale, $w, $h) {
   $ext = get_ext($src);
-  $dst = str_replace("." . $ext, "(" . $scale . ")." . $ext, $src);
+  $dst = str_replace("." . $ext, "($scale)-$w" . "x" . $h . "." . $ext, $src);
   return $dst;
 }
 
@@ -109,7 +109,7 @@ function read_tile_csv(&$tile_store, $level) {
             if ($key == 0 || $key == 1) {
               continue;
             }
-            $dst = rename_file_with_scale($src, $scale);
+            $dst = rename_file_with_scale($src, $scale, "0", "0");
             array_push($img_item->dst, $dst);
             array_push($img_item->scale, $scale);
             
@@ -198,23 +198,23 @@ function read_order_csv(&$tile_store, &$order_store, $level) {
           // change density
           change_density($src_path, $level+4);
 
-          $dst = rename_file_with_scale($tile->src, $tile_item->scale);
+          $dst = rename_file_with_scale($tile->src, $tile_item->scale, $tile_item->w, $tile_item->h);
           $tile_item->dst = $dst;
           $dst_path = get_dst_file_path($dst, false);
           copy($src_path, $dst_path);
           echo indent($level+4) . "Copied file: src=" . $src_path . ", dst=" . $dst_path . PHP_EOL;
 
+          // rotate
+          rotate_image($dst, -90, $level+4);
+
+          // make target inch (we should calculate inches according to scale value)
+          make_target_inch($dst, $tile_item->w * 100 / $tile_item->scale, $tile_item->h * 100 / $tile_item->scale, $level+4);
+
           // scaling each tile
           resize_image($dst, $tile_item->scale, $level+4);
 
-          // rotate
-          rotate_image($dst, -90, $level+4);
-          
-          // make target inch
-          make_target_inch($dst, $tile_item->w, $level+4);
-
           // repeated tile according to width, height
-          repeat_image($dst, $tile_item->h / $tile_item->w, $level+4);
+          //repeat_image($dst, $tile_item->h / $tile_item->w, $level+4);
 
           $order_item->add($tile_item->sku_id, $tile_item);
       }
