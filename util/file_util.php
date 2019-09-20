@@ -114,8 +114,8 @@ function read_tile_csv(&$tile_store, $level) {
             array_push($img_item->scale, $scale);
             
             $dst_path = get_dst_file_path($dst, false);
-            copy($src_path, $dst_path);
-            echo indent($level+2) . "Copied file: src=" . $src_path . ", dst=" . $dst_path . PHP_EOL;
+            //copy($src_path, $dst_path);
+            //echo indent($level+2) . "Copied file: src=" . $src_path . ", dst=" . $dst_path . PHP_EOL;
           }
 
           $tile_store->add($img_item->sku_id, $img_item);
