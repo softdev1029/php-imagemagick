@@ -2,14 +2,14 @@
 
 function change_density($src, $level) {
   $dpi = get_dpi($src, $level);
-  if ($dpi < DST_DPI) {
+  //if ($dpi < DST_DPI) {
     echo indent($level) . "Starting change density..." . PHP_EOL;
     $dst = $src;
     $cmd = "convert \"" . $src . "\" -density " . DST_DPI . "% \"" . $dst . "\"";
     exec($cmd);
     echo indent($level) . $cmd . PHP_EOL;
     echo indent($level) . "Changed density." . PHP_EOL . PHP_EOL;
-  }
+  //}
 }
 
 function resize_image($file, $scale, $level) {
