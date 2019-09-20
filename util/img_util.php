@@ -99,6 +99,15 @@ function make_target_inch($file, $inch, $level) {
   echo indent($level) . "Made $inch inch images." . PHP_EOL . PHP_EOL;
 }
 
+function rotate_image($file, $value, $level) {
+  echo indent($level) . "Rotating $value : $file ..." . PHP_EOL;
+  $path = get_dst_file_path($file);
+  $cmd = "mogrify -rotate \"$value\" $path";
+  exec($cmd);
+  echo indent($level+1) . "" . $cmd . PHP_EOL;
+  echo indent($level) . "Rotated $value." . PHP_EOL . PHP_EOL;
+}
+
 function merge_order($order, $level) {
   echo indent($level) . "Resizing images..." . PHP_EOL;
   if (!isset($order->items)) {

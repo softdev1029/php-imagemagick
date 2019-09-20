@@ -207,6 +207,9 @@ function read_order_csv(&$tile_store, &$order_store, $level) {
           // scaling each tile
           resize_image($dst, $tile_item->scale, $level+4);
 
+          // rotate
+          rotate_image($dst, -90, $level+4);
+          
           // make target inch
           make_target_inch($dst, $tile_item->w, $level+4);
 
