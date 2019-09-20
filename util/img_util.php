@@ -118,7 +118,7 @@ function repeat_image($file, $repeat, $level) {
     copy($src, $tmp);
     while ($cnt != $repeat) {
       echo indent($level+1) . "Stacking vertically $cnt th ..." . PHP_EOL;
-      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . $src;
+      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . addslashes($src);
       exec($cmd);
       echo indent($level+2) . "" . $cmd . PHP_EOL;
       echo indent($level+1) . "Stacked vertically $cnt th" . PHP_EOL . PHP_EOL;
