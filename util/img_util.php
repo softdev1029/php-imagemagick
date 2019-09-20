@@ -102,7 +102,7 @@ function make_target_inch($file, $inch, $level) {
 function rotate_image($file, $value, $level) {
   echo indent($level) . "Rotating $value : $file ..." . PHP_EOL;
   $path = get_dst_file_path($file);
-  $cmd = "mogrify -rotate \"$value\" " . addslashes($path);
+  $cmd = "mogrify -rotate \"$value\" \"" . addslashes($path) . "\"";
   exec($cmd);
   echo indent($level+1) . "" . $cmd . PHP_EOL;
   echo indent($level) . "Rotated $value." . PHP_EOL . PHP_EOL;
@@ -118,7 +118,7 @@ function repeat_image($file, $repeat, $level) {
     copy($src, $tmp);
     while ($cnt != $repeat) {
       echo indent($level+1) . "Stacking vertically $cnt th ..." . PHP_EOL;
-      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" " . addslashes($src);
+      $cmd = "convert -append \"" . addslashes($tmp) . "\" \"" . addslashes($src) . "\" \"" . addslashes($src) . "\"";
       exec($cmd);
       echo indent($level+2) . "" . $cmd . PHP_EOL;
       echo indent($level+1) . "Stacked vertically $cnt th" . PHP_EOL . PHP_EOL;
